@@ -1,0 +1,118 @@
+To automate creating a Gmail account and storing details in a text file using Python without Selenium or web driver, we will need to use the Google API. The Google API allows us to interact with Google services without the need for a web driver or a browser.
+
+Step 1: Install Required Libraries:
+
+The first step is to install the necessary libraries. For this project, we only need to install google-auth and google-api-python-client. Open your terminal or command prompt and type the following command:
+
+```bash
+!pip install google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
+```
+
+Step 2: Create a Project and Enable Google Sheets API:
+
+We will need to create a new project and enable the Google Sheets API. Please follow the instructions here: https://developers.google.com/sheets/api/quickstart/python
+
+Step 3: Import Required Libraries:
+
+Now that we have enabled the Google Sheets API, we can import the required libraries. For this project, we will need to import the following:
+
+```python
+import os.path
+import json
+import random
+import string
+from google.oauth2.credentials import Credentials
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+```
+
+Step 4: Define Functions:
+
+We will define the following functions to automate the creation of a Gmail account and storing the details in a text file.
+
+Function 1: Create Gmail Account
+
+```python
+def create_gmail_account(first_name, last_name, password, phone, recovery_email):
+    # Set the account details
+    random_number = ''.join(random.choices(string.digits, k=3))
+    username = f"{first_name.lower()}.{last_name.lower()}{random_number}"
+    display_name = f"{first_name} {last_name}"
+    account_info = {'displayName': display_name, 'name': {'givenName': first_name, 'familyName': last_name},
+                    'password': password}
+
+    # Initialize the Gmail API
+    creds = None
+    SCOPES = ['https://www.googleapis.com/auth/gmail.compose', 'https://www.googleapis.com/auth/gmail.send']
+    if os.path.exists('token.json'):
+        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            service_account_info = json.loads(os.environ['GOOGLE_API_CREDS'])
+            creds = service_account.Credentials.from_service_account_info(service_account_info)
+            creds = creds.with_scopes(SCOPES)
+            creds = creds.with_subject(username + '@gmail.com')
+        with open('token.json', 'w') as token:
+            token.write(creds.to_json())
+
+    # Create the account
+    try:
+        service = build('gmail', 'v1', credentials=creds)
+        resource = {
+            "name": account_info["name"],
+            "displayName": account_info["displayName"],
+            "password": account_info["password"],
+            "phones": [{"value": phone, "type": "mobile"}],
+            "recoveryEmail": recovery_email,
+            "birthday": "1901-01-01"
+        }
+        results = service.users().create(body=resource).execute()
+        print(f'Account created for {results["primaryEmail"]}')
+        return results["primaryEmail"], account_info["password"]
+    except HttpError as error:
+        print(F'An error occurred: {error}')
+```
+
+Function 2: Save the Account Details to a Text File
+
+```python
+def save_account_details_to_file(username, password):
+    file_path = "gmail_accounts.txt"
+    with open(file_path, "a") as f:
+        f.write(f"{username}:{password}\n")
+```
+
+Step 5: Putting it All Together:
+
+Now that we have defined the functions, we can put it all together in a main function that does the following:
+1. Prompts the user for their account details
+2. Calls the function to create a Gmail account
+3. Calls the function to save the account details to a text file.
+
+Here's what the code looks like:
+
+```python
+def main():
+    # Get the account details
+    first_name = input("Enter First Name: ")
+    last_name = input("Enter Last Name: ")
+    password = input("Enter Password: ")
+    phone = input("Enter Phone Number: ")
+    recovery_email = input("Enter Recovery Email: ")
+
+    # Create the account
+    username, password = create_gmail_account(first_name, last_name, password, phone, recovery_email)
+
+    # Save the account details to a text file
+    save_account_details_to_file(username, password)
+
+if __name__ == "__main__":
+    main()
+```
+
+This code prompts the user to enter their account details, creates the Gmail account, and saves the details to a text file.
+
+And that's it! You've successfully automated the creation of a Gmail account and storing the details in a text file using Python and Google API.

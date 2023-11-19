@@ -1,0 +1,77 @@
+To automate creating an Instagram account and storing details in a text file using Python without Selenium or web driver, we will need to use the Instagram Private API. The Instagram Private API allows us to interact with Instagram without the need for a web driver or a browser.
+
+Step 1: Install Instagram Private API library:
+
+The first step is to install the Instagram Private API library. To do this, open your terminal or command prompt and type the following command:
+
+```bash
+!pip install InstagramAPI
+```
+
+Step 2: Import Required Libraries:
+
+Now that we have installed the Instagram Private API, we can import the required libraries. For this project, we only need to import the InstagramAPI library.
+
+```python
+from InstagramAPI import InstagramAPI
+```
+
+Step 3: Create an Instagram Account:
+
+We will create a function to create an Instagram account. The function takes three parameters:
+1. username
+2. password
+3. email
+
+```python
+def create_instagram_account(username, password, email):
+    # Initialize the API class
+    api = InstagramAPI(username, password)
+
+    # Set the account details
+    name = username
+    username = username.lower().replace(" ", "")
+
+    # Create the account
+    api.create_account(name=name, username=username, email=email, password=password)
+```
+
+Step 4: Save the Account Details to a Text File:
+
+Now that we have created the Instagram account, we can save the account details to a text file for later use. 
+
+```python
+def save_account_details_to_file(username, password):
+    file_path = "instagram_accounts.txt"
+    with open(file_path, "a") as f:
+        f.write(f"{username}:{password}\n")
+```
+
+Step 5: Putting it All Together:
+
+Now that we have created the functions, we can put it all together in a main function that does the following:
+1. Prompts the user for their account details
+2. Calls the create Instagram account function
+3. Calls the function that saves the account details to a text file.
+
+Here's what the code looks like:
+
+```python
+def main():
+    username = input("Enter Username: ")
+    password = input("Enter Password: ")
+    email = input("Enter Email: ")
+
+    # Create the account
+    create_instagram_account(username, password, email)
+
+    # Save the account details to a text file
+    save_account_details_to_file(username, password)
+
+if __name__ == "__main__":
+    main()
+```
+
+This code prompts the user to enter their account details, creates the Instagram account, and saves the details to a text file.
+
+And that's it! You've successfully automated the creation of an Instagram account and storing the details to a text file using Python and Instagram Private API.

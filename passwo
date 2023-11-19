@@ -1,0 +1,106 @@
+To create a Python or Ruby script that interacts with a browser, downloads a password file, checks for vulnerable passwords, and alerts the user without using Selenium WebDriver, you can make use of libraries like  requests  and  BeautifulSoup  in Python, and  net/http  and  Nokogiri  in Ruby. Here are the step-by-step instructions for both Python and Ruby:
+
+Python:
+
+Step 1: Install dependencies
+
+Install Python if you haven't already.
+Install the required libraries by running the following command:
+ 
+pip install requests beautifulsoup4
+ 
+
+Step 2: Import dependencies
+
+Create a new Python file, for example,  password_checker.py .
+Import the necessary dependencies:
+ 
+import requests
+from bs4 import BeautifulSoup
+ 
+
+Step 3: Perform actions with the browser
+
+Use the  requests  library to send HTTP requests and retrieve the webpage content:
+ 
+response = requests.get('<target_website_url>')
+ 
+
+Step 4: Extract the password file URL
+
+Use  BeautifulSoup  to parse the HTML content and find the password file URL:
+ 
+soup = BeautifulSoup(response.text, 'html.parser')
+password_file_url = soup.find('a', {'href': '<password_file_location>'})['href']
+ 
+
+Step 5: Download the password file
+
+Use  requests  again to download the password file:
+ 
+file_response = requests.get(password_file_url)
+with open('passwords.txt', 'wb') as f:
+    f.write(file_response.content)
+ 
+
+Step 6: Analyze the downloaded password file
+
+Write code to analyze the downloaded password file and check for vulnerable passwords.
+Alert the user about the existence of any vulnerable passwords.
+
+Ruby:
+
+Step 1: Install dependencies
+
+Install Ruby if you haven't already.
+Install the required libraries by running the following command:
+ 
+gem install nokogiri
+ 
+
+Step 2: Import dependencies
+
+Create a new Ruby file, for example,  password_checker.rb .
+Import the necessary dependencies:
+ 
+require 'net/http'
+require 'nokogiri'
+ 
+
+Step 3: Perform actions with the browser
+
+Use the  net/http  library to send HTTP requests and retrieve the webpage content:
+ 
+response = Net::HTTP.get(URI('<target_website_url>'))
+ 
+
+Step 4: Extract the password file URL
+
+Use  Nokogiri  to parse the HTML content and find the password file URL:
+ 
+doc = Nokogiri::HTML(response)
+password_file_url = doc.at('a[href="<password_file_location>"]')['href']
+ 
+
+Step 5: Download the password file
+
+Use  net/http  again to download the password file:
+ 
+file_response = Net::HTTP.get_response(URI(password_file_url))
+File.open('passwords.txt', 'wb') do |f|
+  f.write(file_response.body)
+end
+ 
+
+Step 6: Analyze the downloaded password file
+
+Write code to analyze the downloaded password file and check for vulnerable passwords.
+Alert the user about the existence of any vulnerable passwords.
+
+Explanation:
+
+In Python, the  requests  library is used to send HTTP requests and retrieve webpage content. The  BeautifulSoup  library is then used to parse the HTML content and find the password file URL. Once the password file URL is obtained, you can use  requests  again to download the file, and save it as  passwords.txt . Finally, you can analyze the downloaded password file and check for vulnerable passwords.
+
+In Ruby, the  net/http  library is used to send HTTP requests and retrieve webpage content. The  Nokogiri  library is then used to parse the HTML content and find the password file URL. Similar to Python, you can use  net/http  again to download the file, and save it as  passwords.txt . Finally, you can analyze the downloaded password file and check for vulnerable passwords.
+
+Please note that the approach mentioned here assumes that the password file URL is present in the HTML content of the webpage. The specific HTML structure and extraction logic may vary depending on the target website. Additionally, the analysis of the password file and detection of vulnerable passwords would depend on the file format and your vulnerability checking requirements.
